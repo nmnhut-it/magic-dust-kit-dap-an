@@ -6,7 +6,6 @@
 
 from magic_stage import new_image
 
-
 def flip(image, out, width, height):
     for row in range(height):
         for col in range(width):
@@ -53,19 +52,19 @@ def blend(image, layer, out, width, height):
 
 
 def blur_background(image, mask, out, width, height):
-    anh_mo = new_image(width, height)
-    blur(image, anh_mo, width, height)
-    compose(image, mask, anh_mo, out, width, height)
+    blurred = new_image(width, height)
+    blur(image, blurred, width, height)
+    compose(image, mask, blurred, out, width, height)
 
 
 def scene(person, mask, background, behind, front, out, width, height):
-    phia_sau = new_image(width, height)
-    blend(background, behind, phia_sau, width, height)
+    back_layer = new_image(width, height)
+    blend(background, behind, back_layer, width, height)
 
-    co_nguoi = new_image(width, height)
-    compose(person, mask, phia_sau, co_nguoi, width, height)
+    with_person = new_image(width, height)
+    compose(person, mask, back_layer, with_person, width, height)
 
-    blend(co_nguoi, front, out, width, height)
+    blend(with_person, front, out, width, height)
 
 
 def negative(image, out, width, height):

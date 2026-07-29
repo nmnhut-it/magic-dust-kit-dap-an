@@ -5,7 +5,6 @@
 
 from magic_stage import play_effect, say, add_button
 
-
 def setup():
     add_button("Rồng Lửa", "dragon")
     add_button("Phượng Hoàng", "phoenix")
