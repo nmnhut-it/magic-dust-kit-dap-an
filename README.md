@@ -1,6 +1,6 @@
 # Magic Dust — Đáp Án
 
-Đây là bản đã làm xong của hai bài tập trong
+Đây là bản đã làm xong của cả bài chính lẫn bốn bài thêm trong
 [**bộ đồ nghề**](https://github.com/nmnhut-it/magic-dust-kit). Thả hai file vào
 là phép chạy được ngay: giơ 1 ngón ra rồng, 2 ngón ra phượng hoàng, 3 ngón ra
 hoa anh đào, nói "mưa" thì mưa rơi, và ba phím `F` `B` `N` lật / làm mờ / ghép
@@ -37,30 +37,25 @@ python TU-CHAM.py
 ```
 
 Chạy được ngay cả khi máy không có camera và chưa cài gì thêm — nó dựng một
-`magic_stage` giả rồi gọi thẳng vào hai file đáp án. Kết quả thật khi chạy lệnh
-này:
+`magic_stage` giả rồi gọi thẳng vào hai file đáp án. Đây là cùng một bộ chấm mà
+bộ đồ nghề chạy lúc bật `serve.py` và lúc bạn bấm `T` trong trang. Kết quả thật:
 
 ```
-[1] người chấm bài trong trang (phím T)
   ✓ flip
   ✓ blur
   ✓ blend
-
-[2] kiểm thêm phần xử lý ảnh
-  ✓ flip đúng trên ảnh 5x4
-  ✓ blur giữ nguyên ảnh phẳng, kể cả ô sát mép (chia đúng số hàng xóm)
-  ✓ blend kẹp 255 riêng từng kênh màu
-  ✓ blend cộng đúng ô thứ hai
-
-[3] bộ chọn thần chú
+  ✓ negative
+  ✓ grayscale
+  ✓ flip_vertical
+  ✓ drop_blue
   ✓ 1 ngón tay ra dragon
+  ✓ 2 ngón tay ra phoenix
+  ✓ 3 ngón tay ra sakura
+  ✓ số chưa gán phép thì phải nói ra chứ không im lặng
+  ✓ nói "rồng" ra dragon
   ...
-ĐÁP ÁN CHẠY ĐÚNG HẾT.
+XONG HET BAI.
 ```
-
-Người chấm bài trong trang chỉ thử một ảnh tí hon, nên `TU-CHAM.py` kiểm thêm
-mấy chỗ nó không với tới: ảnh rộng hơn một hàng, ô nằm sát mép, và phép cộng
-tràn quá 255.
 
 ---
 
@@ -82,6 +77,10 @@ mép. Loại lỗi khó tìm nhất là loại không có thông báo lỗi.
 ---
 
 ## Muốn đi xa hơn
+
+Bốn bài thêm ở cuối `image_spells.py` (`negative`, `grayscale`,
+`flip_vertical`, `drop_blue`) đều ngắn hơn `blur` — đọc xong thì tự viết phép
+thứ năm: nửa ảnh soi gương, tăng tương phản, hay đổi chỗ hai kênh màu.
 
 Đáp án mới dùng ba trong mười một hiệu ứng có sẵn (`dragon` `koto` `rose`
 `phoenix` `butterfly` `sakura` `smoke` `rain` `flower` `magic` `lightning`).

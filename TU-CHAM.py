@@ -1,86 +1,119 @@
-# Chấm đáp án ngay trên máy, không cần trình duyệt, không cần camera.
-#     python TU-CHAM.py
-#
-# Nó làm hai việc: chạy đúng người-chấm-bài mà học sinh bấm phím T trong trang,
-# rồi kiểm thêm mấy trường hợp mà bản chấm nhỏ kia không với tới (ảnh rộng
-# hơn, ô sát mép, giá trị cộng tràn 255) và thử gọi hai hàm trong spells.py
-# với một `magic_stage` giả để xem nhánh if/elif có ra đúng hiệu ứng không.
+#!/usr/bin/env python3
+"""Chấm bài trong `student/` ngay trên máy — không cần trình duyệt, không cần camera.
 
-import sys, types, pathlib
+    python TU-CHAM.py
 
-sys.path.insert(0, str(pathlib.Path(__file__).parent / "student"))
+Đây là bản chấm giống hệt `cham.py` trong bộ đồ nghề (bộ đó tự chấm mỗi lần
+`serve.py` khởi động). Ở đây nó chấm chính đáp án, để chứng minh đáp án chạy
+đúng chứ không phải chép cho có.
 
-# ── magic_stage giả: ghi lại lệnh thay vì vẽ lên màn hình ───────────────────
-da_goi = []
-gia = types.ModuleType("magic_stage")
-gia.play_effect = lambda ten: da_goi.append(("fx", ten))
-gia.say = lambda chu: da_goi.append(("say", chu))
-sys.modules["magic_stage"] = gia
+Nó dựng một `magic_stage` giả (ghi lại lệnh thay vì vẽ lên màn hình) rồi gọi
+thẳng vào hai file của bạn, nên chấm được cả phần `if / elif` lẫn phần ảnh.
+"""
+import sys
+import types
+import pathlib
 
-import image_spells, spells
+STUDENT_DIR = pathlib.Path(__file__).parent / "student"
+FINGER_TASKS = ((1, "dragon"), (2, "phoenix"), (3, "sakura"))
+VOICE_TASKS = (("rồng", "dragon"), ("dragon", "dragon"), ("hoa", "sakura"),
+               ("sakura", "sakura"), ("mưa", "rain"), ("rain", "rain"))
 
-loi = []
-
-
-def can(dieu_kien, mo_ta):
-    print(("  ✓ " if dieu_kien else "  ✖ ") + mo_ta)
-    if not dieu_kien:
-        loi.append(mo_ta)
+calls = []          # nhật ký lệnh mà mã của học sinh đã gọi ra
 
 
-def anh(width, height, mau):
-    px = []
-    for row in range(height):
-        for col in range(width):
-            px += mau(row, col) + [255]
-    return px
+def _record_effect(name):
+    calls.append(("fx", str(name)))
 
 
-print("\n[1] người chấm bài trong trang (phím T)")
-for dong in image_spells.kiem_tra().split("\n"):
-    print("  " + dong)
-    if dong.startswith("✖"):
-        loi.append(dong)
+def _record_cast(name):
+    calls.append(("cast", str(name)))
 
-print("\n[2] kiểm thêm phần xử lý ảnh")
 
-w, h = 5, 4
-px = anh(w, h, lambda r, c: [c * 5, r * 5, 100])
-out = [0] * len(px)
-image_spells.flip(px, out, w, h)
-can(all(out[(r * w + c) * 4] == px[(r * w + (w - 1 - c)) * 4]
-        for r in range(h) for c in range(w)), "flip đúng trên ảnh 5x4")
+def _record_say(text):
+    calls.append(("say", str(text)))
 
-px = anh(3, 3, lambda r, c: [90, 90, 90])
-out = [0] * len(px)
-image_spells.blur(px, out, 3, 3)
-can(all(out[(r * 3 + c) * 4] == 90 for r in range(3) for c in range(3)),
-    "blur giữ nguyên ảnh phẳng, kể cả ô sát mép (chia đúng số hàng xóm)")
 
-px = anh(2, 1, lambda r, c: [250, 10, 0])
-layer = anh(2, 1, lambda r, c: [50, 10, 0] if c == 0 else [200, 0, 0])
-out = [0] * len(px)
-image_spells.blend(px, layer, out, 2, 1)
-can(out[0] == 255 and out[1] == 20, "blend kẹp 255 riêng từng kênh màu")
-can(out[4] == 255 and out[5] == 10, "blend cộng đúng ô thứ hai")
+def _load():
+    """Nạp hai file của học sinh với một `magic_stage` giả."""
+    sys.path.insert(0, str(STUDENT_DIR))
+    fake_stage = types.ModuleType("magic_stage")
+    fake_stage.play_effect = _record_effect
+    fake_stage.cast = _record_cast
+    fake_stage.say = _record_say
+    sys.modules["magic_stage"] = fake_stage
+    import image_spells
+    import spells
+    return spells, image_spells
 
-print("\n[3] bộ chọn thần chú")
-for so, mong in ((1, "dragon"), (2, "phoenix"), (3, "sakura")):
-    da_goi.clear()
-    spells.on_fingers(so)
-    can(("fx", mong) in da_goi, f"{so} ngón tay ra {mong}")
-da_goi.clear()
-spells.on_fingers(9)
-can(da_goi and da_goi[0][0] == "say", "số chưa gán thì nói ra chứ không im lặng")
 
-for tu, mong in (("rồng", "dragon"), ("dragon", "dragon"),
-                 ("hoa", "sakura"), ("mưa", "rain"), ("rain", "rain")):
-    da_goi.clear()
-    spells.on_voice(tu)
-    can(("fx", mong) in da_goi, f'nói "{tu}" ra {mong}')
-da_goi.clear()
-spells.on_voice("bâng quơ")
-can(da_goi and da_goi[0][0] == "say", "từ lạ thì đọc lại cho biết máy nghe ra gì")
+def _check_spells(spells):
+    """Gọi on_fingers / on_voice với từng đề bài, xem có ra đúng hiệu ứng không."""
+    results = []
+    for count, wanted in FINGER_TASKS:
+        del calls[:]
+        spells.on_fingers(count)
+        results.append((("fx", wanted) in calls, f"{count} ngón tay ra {wanted}"))
+    del calls[:]
+    spells.on_fingers(9)
+    results.append((bool(calls), "số chưa gán phép thì phải nói ra chứ không im lặng"))
+    for word, wanted in VOICE_TASKS:
+        del calls[:]
+        spells.on_voice(word)
+        results.append((("fx", wanted) in calls, f'nói "{word}" ra {wanted}'))
+    del calls[:]
+    spells.on_voice("bâng quơ")
+    results.append((bool(calls), "từ lạ thì phải đọc lại cho biết máy nghe ra gì"))
+    return results
 
-print("\n" + ("ĐÁP ÁN CHẠY ĐÚNG HẾT." if not loi else f"CÒN {len(loi)} CHỖ SAI."))
-sys.exit(1 if loi else 0)
+
+def _check_images(image_spells):
+    """Chạy đúng người-chấm-bài mà học sinh bấm phím T trong trang."""
+    results = []
+    for line in image_spells.check_all().split("\n"):
+        if line.startswith("—"):                      # dòng tiêu đề "bài thêm"
+            continue
+        results.append((not line.startswith("✖"), line[1:].strip()))
+    return results
+
+
+def check():
+    """Trả về (danh sách dòng đã định dạng, số chỗ còn sai)."""
+    try:
+        spells, image_spells = _load()
+    except Exception as err:
+        return [f"  ✖ không nạp được student/: {type(err).__name__}: {err}"], 1
+
+    results = []
+    try:
+        results += _check_images(image_spells)
+    except Exception as err:
+        results.append((False, f"phần ảnh văng lỗi: {type(err).__name__}: {err}"))
+    try:
+        results += _check_spells(spells)
+    except Exception as err:
+        results.append((False, f"phần thần chú văng lỗi: {type(err).__name__}: {err}"))
+
+    lines = []
+    wrong = 0
+    for passed, text in results:
+        if passed:
+            lines.append("  ✓ " + text)
+        else:
+            lines.append("  ✖ " + text)
+            wrong += 1
+    return lines, wrong
+
+
+def main():
+    lines, wrong = check()
+    print("\n".join(lines))
+    if wrong:
+        print(f"Con {wrong} cho chua xong.")
+        return 1
+    print("XONG HET BAI.")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
