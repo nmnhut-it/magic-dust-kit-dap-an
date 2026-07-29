@@ -1,8 +1,10 @@
 # ============================================================================
 #  ĐÁP ÁN — BÀI TẬP 2: CÁC PHÉP XỬ LÝ ẢNH, CHẠY TRÊN CHÍNH KHUÔN MẶT BẠN
-#  Cùng đề bài với trang làm bài (mở trang chủ). Sửa file này rồi quay ra sân
-#  khấu bấm R để nạp lại, bấm T để máy chấm.
+#  Cùng đề bài với trang làm bài. Sửa file này rồi quay ra sân khấu bấm R để
+#  nạp lại, bấm T để máy chấm.
 # ============================================================================
+
+from magic_stage import new_image
 
 
 def flip(image, out, width, height):
@@ -31,6 +33,15 @@ def blur(image, out, width, height):
             out[row][col] = [red // count, green // count, blue // count]
 
 
+def compose(person, mask, background, out, width, height):
+    for row in range(height):
+        for col in range(width):
+            if mask[row][col] > 128:
+                out[row][col] = person[row][col]
+            else:
+                out[row][col] = background[row][col]
+
+
 def blend(image, layer, out, width, height):
     for row in range(height):
         for col in range(width):
@@ -41,13 +52,20 @@ def blend(image, layer, out, width, height):
                              min(255, base[2] + glow[2])]
 
 
-def compose(person, mask, background, out, width, height):
-    for row in range(height):
-        for col in range(width):
-            if mask[row][col] > 128:
-                out[row][col] = person[row][col]
-            else:
-                out[row][col] = background[row][col]
+def blur_background(image, mask, out, width, height):
+    anh_mo = new_image(width, height)
+    blur(image, anh_mo, width, height)
+    compose(image, mask, anh_mo, out, width, height)
+
+
+def scene(person, mask, background, behind, front, out, width, height):
+    phia_sau = new_image(width, height)
+    blend(background, behind, phia_sau, width, height)
+
+    co_nguoi = new_image(width, height)
+    compose(person, mask, phia_sau, co_nguoi, width, height)
+
+    blend(co_nguoi, front, out, width, height)
 
 
 def negative(image, out, width, height):
