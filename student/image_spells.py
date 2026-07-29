@@ -6,6 +6,8 @@
 
 from magic_stage import new_image
 
+# image = ảnh MÁY ĐƯA CHO BẠN. Chỉ đọc, đừng sửa.
+
 def flip(image, out, width, height):
     for row in range(height):
         for col in range(width):
@@ -30,6 +32,17 @@ def blur(image, out, width, height):
                     blue = blue + pixel[2]
                     count = count + 1
             out[row][col] = [red // count, green // count, blue // count]
+
+
+def blend_alpha(image, layer, strength, out, width, height):
+    rest = 100 - strength
+    for row in range(height):
+        for col in range(width):
+            base = image[row][col]
+            top = layer[row][col]
+            out[row][col] = [(base[0] * rest + top[0] * strength) // 100,
+                             (base[1] * rest + top[1] * strength) // 100,
+                             (base[2] * rest + top[2] * strength) // 100]
 
 
 def compose(person, mask, background, out, width, height):
