@@ -4,6 +4,7 @@
 #  khấu bấm R để nạp lại, bấm T để máy chấm.
 # ============================================================================
 
+
 def flip(image, out, width, height):
     for row in range(height):
         for col in range(width):
@@ -38,6 +39,15 @@ def blend(image, layer, out, width, height):
             out[row][col] = [min(255, base[0] + glow[0]),
                              min(255, base[1] + glow[1]),
                              min(255, base[2] + glow[2])]
+
+
+def compose(person, mask, background, out, width, height):
+    for row in range(height):
+        for col in range(width):
+            if mask[row][col] > 128:
+                out[row][col] = person[row][col]
+            else:
+                out[row][col] = background[row][col]
 
 
 def negative(image, out, width, height):
