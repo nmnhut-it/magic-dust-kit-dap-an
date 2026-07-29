@@ -43,6 +43,18 @@ def blend_alpha(image, layer, strength, out, width, height):
                              (base[2] * rest + top[2] * strength) // 100]
 
 
+def blend_over(base, top, alpha, out, width, height):
+    for row in range(height):
+        for col in range(width):
+            under = base[row][col]
+            over = top[row][col]
+            a = alpha[row][col]
+            rest = 255 - a
+            out[row][col] = [(over[0] * a + under[0] * rest) // 255,
+                             (over[1] * a + under[1] * rest) // 255,
+                             (over[2] * a + under[2] * rest) // 255]
+
+
 def compose(person, mask, background, out, width, height):
     for row in range(height):
         for col in range(width):
