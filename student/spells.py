@@ -1,12 +1,10 @@
 # ============================================================================
 #  ĐÁP ÁN — BÀI TẬP 1: BỘ CHỌN THẦN CHÚ VÀ BẢNG NÚT CỦA BẠN
-#  Cùng đề bài với trang làm bài. Sửa xong lưu file rồi bấm R ở sân khấu.
+#  Cùng đề bài với trang làm bài. Sửa xong bấm R ở sân khấu.
 # ============================================================================
 
-from magic_stage import play_effect, say, add_button
+from magic_stage import play_effect, say, add_button, fingers_now
 
-# Máy gọi setup() một lần sau khi nạp mã của bạn.
-#     add_button("Rồng Lửa", "dragon")   -> mọc một nút, bấm là ra rồng
 
 def setup():
     add_button("Rồng Lửa", "dragon")
@@ -27,11 +25,12 @@ def on_fingers(count):
 
 
 def on_voice(word):
-    if word == "rồng" or word == "dragon":
+    fingers = fingers_now()
+    if fingers == 1 and (word == "rồng" or word == "dragon"):
         play_effect("dragon")
-    elif word == "hoa" or word == "sakura":
+    elif fingers == 2 and (word == "phượng" or word == "phoenix"):
+        play_effect("phoenix")
+    elif fingers == 3 and (word == "hoa" or word == "sakura"):
         play_effect("sakura")
-    elif word == "mưa" or word == "rain":
-        play_effect("rain")
     else:
-        say("nghe được: " + word)
+        say("nghe " + word + " nhưng tay đang giơ " + str(fingers) + " ngón")

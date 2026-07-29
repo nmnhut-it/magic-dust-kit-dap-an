@@ -1,12 +1,10 @@
 # ============================================================================
-#  ĐÁP ÁN — BÀI TẬP 2: CÁC PHÉP XỬ LÝ ẢNH, CHẠY TRÊN CHÍNH KHUÔN MẶT BẠN
-#  Cùng đề bài với trang làm bài. Sửa file này rồi quay ra sân khấu bấm R để
-#  nạp lại, bấm T để máy chấm.
+#  ĐÁP ÁN — BÀI TẬP 2: CÁC PHÉP XỬ LÝ ẢNH
+#  Cùng đề bài với trang làm bài. Sửa xong bấm R ở sân khấu, bấm T để chấm.
 # ============================================================================
 
 from magic_stage import new_image
 
-# image = ảnh MÁY ĐƯA CHO BẠN. Chỉ đọc, đừng sửa.
 
 def flip(image, out, width, height):
     for row in range(height):
