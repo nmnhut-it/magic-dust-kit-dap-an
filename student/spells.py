@@ -1,16 +1,20 @@
-# ============================================================================
-#  ĐÁP ÁN — BÀI TẬP 1: BỘ CHỌN THẦN CHÚ VÀ BẢNG NÚT CỦA BẠN
-#  Cùng đề bài với trang làm bài. Sửa xong bấm R ở sân khấu.
-# ============================================================================
-
-from magic_stage import play_effect, say, add_button, fingers_now
-
+from magic_stage import play_effect, say, add_button, fingers_now, set_background, set_behind, set_front
 
 def setup():
     add_button("Rồng Lửa", "dragon")
     add_button("Phượng Hoàng", "phoenix")
     add_button("Hoa Anh Đào", "sakura")
     add_button("Mưa Giông", "rain")
+
+
+def stage():
+    set_background("rung")
+    set_behind("rain")
+    set_front("dragon")
+
+    add_button("Rồng Lửa", "dragon")
+    add_button("Phượng Hoàng", "phoenix")
+    add_button("Hoa Anh Đào", "sakura")
 
 
 def on_fingers(count):

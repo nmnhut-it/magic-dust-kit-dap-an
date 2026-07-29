@@ -1,10 +1,4 @@
-# ============================================================================
-#  ĐÁP ÁN — BÀI TẬP 2: CÁC PHÉP XỬ LÝ ẢNH
-#  Cùng đề bài với trang làm bài. Sửa xong bấm R ở sân khấu, bấm T để chấm.
-# ============================================================================
-
 from magic_stage import new_image
-
 
 def flip(image, out, width, height):
     for row in range(height):
@@ -30,6 +24,16 @@ def blur(image, out, width, height):
                     blue = blue + pixel[2]
                     count = count + 1
             out[row][col] = [red // count, green // count, blue // count]
+
+
+def blend(image, layer, out, width, height):
+    for row in range(height):
+        for col in range(width):
+            base = image[row][col]
+            glow = layer[row][col]
+            out[row][col] = [min(255, base[0] + glow[0]),
+                             min(255, base[1] + glow[1]),
+                             min(255, base[2] + glow[2])]
 
 
 def blend_alpha(image, layer, strength, out, width, height):
@@ -62,16 +66,6 @@ def compose(person, mask, background, out, width, height):
                 out[row][col] = person[row][col]
             else:
                 out[row][col] = background[row][col]
-
-
-def blend(image, layer, out, width, height):
-    for row in range(height):
-        for col in range(width):
-            base = image[row][col]
-            glow = layer[row][col]
-            out[row][col] = [min(255, base[0] + glow[0]),
-                             min(255, base[1] + glow[1]),
-                             min(255, base[2] + glow[2])]
 
 
 def blur_background(image, mask, out, width, height):
