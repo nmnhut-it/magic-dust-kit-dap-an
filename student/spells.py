@@ -1,4 +1,5 @@
-from magic_stage import play_effect, say, add_button, fingers_now, set_background, set_behind, set_front
+import asyncio
+from magic_stage import play_effect, say, add_button, fingers_now, set_background, set_behind, set_front, heard_word, run_loop
 
 def setup():
     add_button("Rồng Lửa", "dragon")
@@ -38,3 +39,18 @@ def on_voice(word):
         play_effect("sakura")
     else:
         say("nghe " + word + " nhưng tay đang giơ " + str(fingers) + " ngón")
+
+
+async def main_loop():
+    while True:
+        count = fingers_now()
+        word = heard_word()
+        if count == 1 and word in ("rồng", "dragon"):
+            play_effect("dragon")
+        elif count == 2 and word in ("phượng", "phoenix"):
+            play_effect("phoenix")
+        elif count == 3 and word in ("hoa", "sakura"):
+            play_effect("sakura")
+        await asyncio.sleep(0.15)
+
+run_loop(main_loop)
